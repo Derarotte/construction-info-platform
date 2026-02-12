@@ -33,3 +33,9 @@ uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
 - `GET /api/health`
 - `GET /api/projects`
+- `GET /api/quality-issues`
+- `POST /api/quality-issues`
+- `POST /api/quality-issues/{issue_id}/transition`
+- `GET /api/tasks?project_id=...`
+- `POST /api/tasks`
+- `GET /api/tasks/critical-path?project_id=...`
