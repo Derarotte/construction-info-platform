@@ -40,3 +40,10 @@ npm run build:win
 
 - 默认使用本地存储：`VITE_DATA_SOURCE=local`
 - 预留后端模式：`VITE_DATA_SOURCE=api`（当前会自动回退到 local）
+
+## 数据库迁移脚本
+
+- MySQL 初始化：`database/mysql_schema.sql` + `database/mysql_seed.sql`
+- MySQL 增量 v2：`database/mysql_migration_v2.sql`
+- PostgreSQL 初始化：`database/schema.sql` + `database/seed.sql`
+- PostgreSQL 增量 v2：`database/pg_migration_v2.sql`
