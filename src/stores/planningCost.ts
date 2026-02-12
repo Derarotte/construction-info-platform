@@ -1,6 +1,7 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 import { useProjectOrgStore } from './projectOrg'
+import { createPlanningCostRepository } from '../repositories/planningCostRepository'
 
 export interface TaskNode {
   id: string
@@ -16,8 +17,6 @@ export interface TaskNode {
   predecessors: string[]
 }
 
-const STORAGE_KEY = 'cip_planning_cost_v1'
-
 function uid() {
   return `${Date.now()}-${Math.random().toString(16).slice(2, 8)}`
 }
@@ -25,9 +24,10 @@ function uid() {
 export const usePlanningCostStore = defineStore('planning-cost', () => {
   const tasks = ref<TaskNode[]>([])
   const loaded = ref(false)
+  const repository = createPlanningCostRepository()
 
   function persist() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks.value))
+    repository.saveTasks(tasks.value)
   }
 
   function seed() {
@@ -113,9 +113,9 @@ export const usePlanningCostStore = defineStore('planning-cost', () => {
 
   function load() {
     if (loaded.value) return
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (raw) {
-      tasks.value = JSON.parse(raw) as TaskNode[]
+    const rows = repository.loadTasks()
+    if (rows.length > 0) {
+      tasks.value = rows
     } else {
       seed()
       persist()

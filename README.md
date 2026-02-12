@@ -35,3 +35,8 @@ npm run build:win
 3. 接入对象存储与分片上传，完善资料中心。
 4. 接入地图服务与空间查询。
 5. 接入大模型服务，形成可运营的 AI 助理能力。
+
+## 数据源切换（预留）
+
+- 默认使用本地存储：`VITE_DATA_SOURCE=local`
+- 预留后端模式：`VITE_DATA_SOURCE=api`（当前会自动回退到 local）

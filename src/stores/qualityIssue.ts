@@ -1,6 +1,7 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 import { useProjectOrgStore } from './projectOrg'
+import { createQualityIssueRepository } from '../repositories/qualityIssueRepository'
 
 export type QualityLevel = '低' | '中' | '高' | '严重'
 export type QualityStatus = '已上报' | '整改中' | '待复验' | '已闭环' | '驳回'
@@ -31,9 +32,6 @@ export interface QualityIssue {
   closedAt?: string
 }
 
-const STORAGE_KEY = 'cip_quality_issues_v1'
-const STORAGE_EVENT_KEY = 'cip_quality_events_v1'
-
 function uid() {
   return `${Date.now()}-${Math.random().toString(16).slice(2, 8)}`
 }
@@ -60,6 +58,7 @@ export const useQualityIssueStore = defineStore('quality-issue', () => {
   const issues = ref<QualityIssue[]>([])
   const events = ref<QualityEvent[]>([])
   const loaded = ref(false)
+  const repository = createQualityIssueRepository()
 
   const openCount = computed(() =>
     issues.value.filter((item) => item.status !== '已闭环').length,
@@ -71,8 +70,8 @@ export const useQualityIssueStore = defineStore('quality-issue', () => {
   })
 
   function persist() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(issues.value))
-    localStorage.setItem(STORAGE_EVENT_KEY, JSON.stringify(events.value))
+    repository.saveIssues(issues.value)
+    repository.saveEvents(events.value)
   }
 
   function seedFromProjectStore() {
@@ -138,11 +137,11 @@ export const useQualityIssueStore = defineStore('quality-issue', () => {
 
   function load() {
     if (loaded.value) return
-    const rawIssue = localStorage.getItem(STORAGE_KEY)
-    const rawEvent = localStorage.getItem(STORAGE_EVENT_KEY)
-    if (rawIssue) {
-      issues.value = JSON.parse(rawIssue) as QualityIssue[]
-      events.value = rawEvent ? (JSON.parse(rawEvent) as QualityEvent[]) : []
+    const issueRows = repository.loadIssues()
+    const eventRows = repository.loadEvents()
+    if (issueRows.length > 0) {
+      issues.value = issueRows
+      events.value = eventRows
     } else {
       seedFromProjectStore()
       persist()
