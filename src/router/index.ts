@@ -6,6 +6,7 @@ import QualityView from '../views/QualityView.vue'
 import DocumentView from '../views/DocumentView.vue'
 import GisView from '../views/GisView.vue'
 import AiAssistView from '../views/AiAssistView.vue'
+import PlanningCostView from '../views/PlanningCostView.vue'
 
 const router = createRouter({
   history: createWebHashHistory(),
@@ -18,6 +19,7 @@ const router = createRouter({
         { path: 'dashboard', component: DashboardView, meta: { title: '运营看板' } },
         { path: 'project-org', component: ProjectOrgView, meta: { title: '项目与组织' } },
         { path: 'quality', component: QualityView, meta: { title: '质量管理' } },
+        { path: 'planning-cost', component: PlanningCostView, meta: { title: '工期与造价' } },
         { path: 'documents', component: DocumentView, meta: { title: '资料管理' } },
         { path: 'gis', component: GisView, meta: { title: 'GIS 工点地图' } },
         { path: 'ai-assist', component: AiAssistView, meta: { title: 'AI 辅助中心' } },

@@ -30,6 +30,7 @@ const menus = [
   { path: '/dashboard', label: '运营看板', icon: 'DataLine' },
   { path: '/project-org', label: '项目与组织', icon: 'OfficeBuilding' },
   { path: '/quality', label: '质量管理', icon: 'CircleCheck' },
+  { path: '/planning-cost', label: '工期与造价', icon: 'TrendCharts' },
   { path: '/documents', label: '资料管理', icon: 'FolderOpened' },
   { path: '/gis', label: 'GIS 地图', icon: 'LocationInformation' },
   { path: '/ai-assist', label: 'AI 辅助', icon: 'MagicStick' },
