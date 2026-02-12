@@ -47,3 +47,8 @@ npm run build:win
 - MySQL 增量 v2：`database/mysql_migration_v2.sql`
 - PostgreSQL 初始化：`database/schema.sql` + `database/seed.sql`
 - PostgreSQL 增量 v2：`database/pg_migration_v2.sql`
+
+## FastAPI 后端
+
+- 路径：`backend/`
+- 启动与迁移说明见：`backend/README.md`
