@@ -1,9 +1,13 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const route = useRoute()
 const router = useRouter()
 const runMode = window.platformInfo?.desktop ? '桌面端运行中' : 'Web 预览模式'
+const today = computed(() =>
+  new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' }),
+)
 
 const menus = [
   { path: '/dashboard', label: '运营看板', icon: 'DataLine' },
@@ -36,8 +40,14 @@ function handleMenuSelect(path: string) {
 
     <el-container>
       <el-header class="header">
-        <div class="title">{{ route.meta.title }}</div>
-        <el-tag type="success" effect="dark">{{ runMode }}</el-tag>
+        <div>
+          <div class="title">{{ route.meta.title }}</div>
+          <div class="subtitle">施工信息化一体化平台 / 统一运营入口</div>
+        </div>
+        <div class="header-actions">
+          <el-tag type="success" effect="dark">{{ runMode }}</el-tag>
+          <el-tag type="info">日期 {{ today }}</el-tag>
+        </div>
       </el-header>
       <el-main class="main-content">
         <router-view />
@@ -98,6 +108,17 @@ function handleMenuSelect(path: string) {
   font-size: 20px;
   font-weight: 600;
   color: #102a43;
+}
+
+.subtitle {
+  margin-top: 4px;
+  color: #627d98;
+  font-size: 12px;
+}
+
+.header-actions {
+  display: flex;
+  gap: 10px;
 }
 
 .main-content {
