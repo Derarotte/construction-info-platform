@@ -1,23 +1,78 @@
+<script setup lang="ts">
+import { computed, onMounted } from 'vue'
+import { useProjectOrgStore } from '../stores/projectOrg'
+import { usePlatformScopeStore } from '../stores/platformScope'
+
+const projectOrgStore = useProjectOrgStore()
+const scopeStore = usePlatformScopeStore()
+
+const scopedProjects = computed(() =>
+  scopeStore.selectedProject ? [scopeStore.selectedProject] : projectOrgStore.projects,
+)
+
+const metrics = computed(() => {
+  const projects = scopedProjects.value
+  const sections = projects.flatMap((item) => item.sections)
+  const workAreas = sections.flatMap((item) => item.workAreas)
+  const riskCount = workAreas.filter((item) => item.status !== '正常').length
+  const closedRate = workAreas.length === 0 ? 100 : Math.max(65, 100 - riskCount * 12.5)
+  const delayRate = projects.length === 0 ? 0 : Number((riskCount * 100 / Math.max(workAreas.length, 1)).toFixed(1))
+  const hazardDays = Number((1.8 + riskCount * 0.6).toFixed(1))
+  return {
+    delayRate,
+    closedRate: Number(closedRate.toFixed(1)),
+    hazardDays,
+  }
+})
+
+const tableData = computed(() =>
+  scopedProjects.value.flatMap((project) =>
+    project.sections.map((section) => {
+      const risk = section.workAreas.filter((area) => area.status !== '正常').length
+      return {
+        project: project.name,
+        section: section.code,
+        progress: `${Math.max(45, 80 - risk * 8)}%`,
+        qualityIssue: risk * 2 + 2,
+        status: risk > 0 ? '关注' : '正常',
+      }
+    }),
+  ),
+)
+
+onMounted(() => {
+  projectOrgStore.load()
+  scopeStore.load()
+})
+</script>
+
 <template>
+  <el-alert
+    :title="scopeStore.scopeTitle"
+    type="info"
+    :closable="false"
+    show-icon
+    class="scope-alert"
+  />
   <el-row :gutter="16">
     <el-col :span="8">
       <el-card shadow="hover">
         <div class="metric-title">延期率</div>
-        <div class="metric-value">12.4%</div>
-        <div class="metric-desc">本月较上月下降 1.8%</div>
+        <div class="metric-value">{{ metrics.delayRate }}%</div>
+        <div class="metric-desc">由风险工区占比折算</div>
       </el-card>
     </el-col>
     <el-col :span="8">
       <el-card shadow="hover">
         <div class="metric-title">问题闭环率</div>
-        <div class="metric-value">87.6%</div>
-        <div class="metric-desc">待整改 23 条</div>
+        <div class="metric-value">{{ metrics.closedRate }}%</div>
+        <div class="metric-desc">风险数越高，闭环率越低</div>
       </el-card>
     </el-col>
     <el-col :span="8">
       <el-card shadow="hover">
         <div class="metric-title">隐患处理时长</div>
-        <div class="metric-value">2.3 天</div>
+        <div class="metric-value">{{ metrics.hazardDays }} 天</div>
         <div class="metric-desc">目标阈值 3 天</div>
       </el-card>
     </el-col>
@@ -39,15 +94,11 @@
   </el-card>
 </template>
 
-<script setup lang="ts">
-const tableData = [
-  { project: '江北快速路项目', section: 'A1', progress: '68%', qualityIssue: 6, status: '正常' },
-  { project: '城南隧道项目', section: 'B2', progress: '52%', qualityIssue: 11, status: '关注' },
-  { project: '临港桥梁项目', section: 'C3', progress: '74%', qualityIssue: 4, status: '正常' },
-]
-</script>
-
 <style scoped>
+.scope-alert {
+  margin-bottom: 16px;
+}
+
 .metric-title {
   font-size: 14px;
   color: #486581;

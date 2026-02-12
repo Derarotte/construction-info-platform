@@ -3,6 +3,7 @@ import { computed, onMounted, reactive, ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import type { FormInstance, FormRules } from 'element-plus'
 import { useProjectOrgStore } from '../stores/projectOrg'
+import { usePlatformScopeStore } from '../stores/platformScope'
 
 type NodeKind = 'project' | 'section' | 'workArea'
 type DialogMode = 'create' | 'edit'
@@ -22,6 +23,7 @@ interface TreeRow {
 }
 
 const store = useProjectOrgStore()
+const scopeStore = usePlatformScopeStore()
 
 const keyword = ref('')
 const statusFilter = ref<'全部' | '正常' | '关注' | '预警'>('全部')
@@ -193,6 +195,7 @@ async function submit() {
 
 onMounted(() => {
   store.load()
+  scopeStore.load()
 })
 </script>
 
@@ -270,6 +273,14 @@ onMounted(() => {
         <el-table-column label="操作" width="320" fixed="right">
           <template #default="{ row }">
             <el-button v-if="row.kind === 'project'" link type="primary" @click="openCreate('section', row)">新增标段</el-button>
+            <el-button
+              v-if="row.kind === 'project'"
+              link
+              type="warning"
+              @click="scopeStore.setProject(row.id)"
+            >
+              设为当前项目
+            </el-button>
             <el-button v-if="row.kind === 'section'" link type="primary" @click="openCreate('workArea', row)">新增工区</el-button>
             <el-button link type="primary" @click="openEdit(row)">编辑</el-button>
             <el-button link type="danger" @click="removeRow(row)">删除</el-button>

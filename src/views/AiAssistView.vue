@@ -1,6 +1,21 @@
+<script setup lang="ts">
+import { onMounted } from 'vue'
+import { useProjectOrgStore } from '../stores/projectOrg'
+import { usePlatformScopeStore } from '../stores/platformScope'
+
+const projectOrgStore = useProjectOrgStore()
+const scopeStore = usePlatformScopeStore()
+
+onMounted(() => {
+  projectOrgStore.load()
+  scopeStore.load()
+})
+</script>
+
 <template>
   <el-card shadow="never">
     <template #header>AI 辅助中心</template>
+    <el-alert :title="scopeStore.scopeTitle" type="info" :closable="false" show-icon class="scope-alert" />
     <el-alert
       title="当前为本地演示模式，二期可接入 FastAPI + 大模型服务。"
       type="info"
@@ -34,6 +49,10 @@
 </template>
 
 <style scoped>
+.scope-alert {
+  margin-bottom: 12px;
+}
+
 .cards {
   margin-top: 16px;
 }

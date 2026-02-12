@@ -1,7 +1,59 @@
+<script setup lang="ts">
+import { computed, onMounted } from 'vue'
+import { useProjectOrgStore } from '../stores/projectOrg'
+import { usePlatformScopeStore } from '../stores/platformScope'
+
+const projectOrgStore = useProjectOrgStore()
+const scopeStore = usePlatformScopeStore()
+
+const issuePool = [
+  {
+    project: '江北快速路项目',
+    code: 'Q-2026-001',
+    title: '支护结构喷射厚度不足',
+    level: '高',
+    owner: '王工',
+    status: '整改中',
+    deadline: '2026-02-18',
+  },
+  {
+    project: '江北快速路项目',
+    code: 'Q-2026-002',
+    title: '钢筋绑扎间距偏差',
+    level: '中',
+    owner: '陈工',
+    status: '已闭环',
+    deadline: '2026-02-15',
+  },
+  {
+    project: '城南隧道项目',
+    code: 'Q-2026-003',
+    title: '防水层搭接不规范',
+    level: '高',
+    owner: '刘工',
+    status: '整改中',
+    deadline: '2026-02-16',
+  },
+]
+
+const issues = computed(() =>
+  scopeStore.selectedProject
+    ? issuePool.filter((item) => item.project === scopeStore.selectedProject?.name)
+    : issuePool,
+)
+
+onMounted(() => {
+  projectOrgStore.load()
+  scopeStore.load()
+})
+</script>
+
 <template>
   <el-card shadow="never">
     <template #header>质量问题上报与整改闭环</template>
+    <el-alert :title="scopeStore.scopeTitle" type="info" :closable="false" show-icon class="scope-alert" />
     <el-table :data="issues" stripe>
+      <el-table-column prop="project" label="项目" min-width="180" />
       <el-table-column prop="code" label="问题编号" width="140" />
       <el-table-column prop="title" label="问题描述" min-width="220" />
       <el-table-column prop="level" label="等级" width="100">
@@ -20,23 +72,8 @@
   </el-card>
 </template>
 
-<script setup lang="ts">
-const issues = [
-  {
-    code: 'Q-2026-001',
-    title: '支护结构喷射厚度不足',
-    level: '高',
-    owner: '王工',
-    status: '整改中',
-    deadline: '2026-02-18',
-  },
-  {
-    code: 'Q-2026-002',
-    title: '钢筋绑扎间距偏差',
-    level: '中',
-    owner: '陈工',
-    status: '已闭环',
-    deadline: '2026-02-15',
-  },
-]
-</script>
+<style scoped>
+.scope-alert {
+  margin-bottom: 12px;
+}
+</style>
